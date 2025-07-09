@@ -52,13 +52,13 @@ const handleMouseOver = (index) => {
     if (blocked) break;
   }
 
-  // if (blocked) {
-  //   // alert("You cannot select this area as it contains already sold pixels.");
-  //   setIsSelecting(false);
-  //   setStartIndex(null);
-  //   setSelectedPixels(new Set()); // Optional: reset current selection
-  //   return;
-  // }
+  if (blocked) {
+    alert("You cannot select this area as it contains already sold pixels.");
+    setIsSelecting(false);
+    setStartIndex(null);
+    setSelectedPixels(new Set()); // Optional: reset current selection
+    return;
+  }
 
   setSelectedPixels(newSet);
 };
