@@ -11,6 +11,6 @@ const databaseConnection = ()=>{
     }).catch((error)=>{
         console.log(error);
     })
-};
+}; 
 
 export default databaseConnection;
