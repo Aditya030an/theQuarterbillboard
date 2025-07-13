@@ -1,6 +1,7 @@
 import SevenCards from "../Components/SevenCard";
 import Link from "next/link";
 import React, { useRef, useState, useEffect } from "react";
+import Gridy from "../Components/grid-component";
 
 const IndexPage = () => {
   const gridSize = 100;
