@@ -3,10 +3,11 @@ import cors from "cors";
 import 'dotenv/config'
 import connectDb from "./config/mongodb.js";
 import userRouter from "./routes/userRoute.js";
+import adRoutes from "./routes/adblock-routes.js";
 
 //App config
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8080;
 connectDb();
 
 
@@ -17,9 +18,8 @@ app.use(cors());
 
 //api end points
 app.use("/api/user" , userRouter);
-
+app.use("/api/adblock" , adRoutes);
 app.get("/" ,(req , res)=>{
-    res.send("API working")
 })
 
 app.listen(port , ()=>{

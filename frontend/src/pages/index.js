@@ -1,9 +1,13 @@
 import SevenCards from "../Components/SevenCard";
 import Link from "next/link";
 import React, { useRef, useState, useEffect } from "react";
+<<<<<<< HEAD
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+=======
+import Gridy from "../Components/grid-component";
+>>>>>>> 36e8bf7adbfaab32777eec95d46403561cbdc982
 
 const IndexPage = () => {
   const [user, setUser] = useState(null);
