@@ -3,7 +3,6 @@ import cors from "cors";
 import 'dotenv/config'
 import connectDb from "./config/mongodb.js";
 import userRouter from "./routes/userRoute.js";
-import bookingRouter from "./routes/bookingRoute.js";
 
 //App config
 const app = express();
@@ -18,7 +17,6 @@ app.use(cors());
 
 //api end points
 app.use("/api/user" , userRouter);
-app.use("/api/booking" , bookingRouter);
 
 app.get("/" ,(req , res)=>{
     res.send("API working")

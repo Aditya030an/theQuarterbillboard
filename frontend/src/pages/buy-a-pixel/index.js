@@ -1,10 +1,20 @@
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/router";
 
 const gridSize = 100;
 const cellSize = 30;
 const miniMapSize = 10;
 
 const BuyPixelPage = () => {
+
+  const router = useRouter();
+
+
+  if(localStorage.getItem("token") === null){
+    alert("Please login first");
+    router.push("/login");
+  }
+
   const cellRefs = useRef([]);
   const containerRef = useRef(null);
 

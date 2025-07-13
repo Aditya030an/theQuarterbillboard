@@ -19,41 +19,6 @@ export  async function sendEmailOtp(to, otp) {
     });
 }
 
-export async function sendLocationAlertEmails(employeeEmail, latitude, longitude) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
-
-    const adminEmail = process.env.ADMIN_EMAIL; // Put admin's email in .env
-
-    // Email to Admin
-    await transporter.sendMail({
-        from: `"Login Alert" <${process.env.EMAIL_USER}>`,
-        to: adminEmail,
-        subject: "Employee Login Location Alert",
-        html: `
-            <h3>📍 Employee Login Detected</h3>
-            <p><strong>Email:</strong> ${employeeEmail}</p>
-            <p><strong>Coordinates:</strong> ${latitude}, ${longitude}</p>
-            <p><a href="https://www.google.com/maps?q=${latitude},${longitude}" target="_blank">View on Google Maps</a></p>
-            <p><em>Time: ${new Date().toLocaleString()}</em></p>
-        `,
-    });
-
-    // Confirmation to Employee
-    await transporter.sendMail({
-        from: `"Login Info" <${process.env.EMAIL_USER}>`,
-        to: employeeEmail,
-        subject: "Location Shared with Admin",
-        text: `Your current location (${latitude}, ${longitude}) has been sent to your supervisor.`,
-    });
-}
-
-
 export async function sendEmailBookingConfirm(to, subject, message) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',

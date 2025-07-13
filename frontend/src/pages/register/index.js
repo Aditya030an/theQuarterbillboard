@@ -1,12 +1,78 @@
 import { useState } from "react";
 import PixelBlock from "../../Components/PixelBlock";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import axios from "axios";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("user"); // default to 'user'
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const router = useRouter();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Required
+    if(!name) newErrors.name= "Name is Required";
+    if (!email) newErrors.email = "Email is required.";
+    if (!password) newErrors.password = "Password is required.";
+
+    // Email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      newErrors.email = "Invalid email format.";
+    }
+
+    // Password length
+    if (password && password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    setServerError("");
+    if (!validateForm()) return;
+
+    console.log("user details", name , email , password , role);
+
+    try {
+      const response = await axios.post(`${API_URL}/api/user/register`, {
+        name,
+        email,
+        password,
+        role,
+      });
+
+      console.log("respnse inside signup", response);
+
+      if (response?.data?.success) {
+        localStorage.setItem("token", response?.data?.token);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRole("user");
+        alert("Register successful!");
+
+        router.push("/login");
+      } else {
+        setServerError(response?.data?.message || "Login failed.");
+      }
+    } catch (err) {
+      setServerError("Something went wrong.");
+      console.error(err);
+    }
+  };
 
   const gridSize = 50;
 
@@ -77,6 +143,7 @@ export default function Signup() {
         </div>
 
         {/* NAME */}
+        <div className="flex flex-col items-center gap-1">
         <div className="flex items-center justify-center gap-8 mt-6 w-full relative ">
           <div className="flex gap-1">
             {renderText(
@@ -86,6 +153,7 @@ export default function Signup() {
               "text-base",
               "font-normal"
             )}
+            
           </div>
           <div
             className={`flex flex-wrap gap-1 justify-center ${
@@ -104,6 +172,7 @@ export default function Signup() {
             <input
               type="text"
               value={name}
+              required
               onChange={(e) => setName(e.target.value)}
               className="absolute opacity-0 pointer-events-auto"
               style={{
@@ -115,8 +184,14 @@ export default function Signup() {
             />
           </div>
         </div>
+        {
+          (errors.name && name.length === 0 ) &&  <span className="text-sm text-red-400">{errors.name}</span>
+        }
+        </div>
 
         {/* EMAIL */}
+        <div className="flex flex-col items-center gap-1">
+
         <div className="flex items-center justify-center gap-8 mt-3 w-full relative">
           <div className="flex gap-1">
             {renderText(
@@ -144,6 +219,7 @@ export default function Signup() {
             <input
               type="email"
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
               className="absolute opacity-0 pointer-events-auto"
               style={{
@@ -154,16 +230,39 @@ export default function Signup() {
             />
           </div>
         </div>
-
+        {
+          (errors.email && email.length === 0 ) &&  <span className="text-sm text-red-400">{errors.email}</span>
+        }
+</div>
         {/* PASSWORD */}
+        <div className="flex flex-col items-center gap-1">
         <div className="flex items-center justify-center gap-8 mt-3 w-full relative">
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             {renderText(
               "PASSWORD",
               "password-label",
               "#F1F5F9",
               "text-base",
               "font-normal"
+            )}
+            {showPassword ? (
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowPassword(false);
+                }}
+              >
+                Show
+              </button>
+            ) : (
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowPassword(true);
+                }}
+              >
+                Hide
+              </button>
             )}
           </div>
           <div
@@ -176,13 +275,17 @@ export default function Signup() {
             ) : (
               password
                 .split("")
-                .map((_, i) => (
-                  <PixelBlock key={`password-char-${i}`} char="*" />
+                .map((char, i) => (
+                  <PixelBlock
+                    key={`password-char-${i}`}
+                    char={showPassword ? char : "*"}
+                  />
                 ))
             )}
             <input
               type="password"
               value={password}
+              required
               onChange={(e) => setPassword(e.target.value)}
               className="absolute opacity-0 pointer-events-auto"
               style={{
@@ -193,12 +296,15 @@ export default function Signup() {
             />
           </div>
         </div>
-
+        {
+          (errors.password && password.length === 0 ) &&  <span className="text-sm text-red-400">{errors.password}</span>
+        }
+</div>
         {/* ROLE */}
         <div className="flex items-center justify-center gap-8 mt-3 w-full">
           <div className="flex gap-1">
             {renderText(
-           "ROLE",
+              "ROLE",
               "role-label",
               "#F1F5F9",
               "text-base",
@@ -207,11 +313,11 @@ export default function Signup() {
           </div>
           <div className="flex gap-4">
             {["user", "creator"].map((option) => (
-              <div
+              <button
                 key={option}
                 className={`cursor-pointer flex gap-1 border rounded px-2 py-1 transition-colors ${
                   role === option
-                    ? "border-[#3B82F6] text-black"
+                    ? "border-[#3B82F6] text-black bg-white"
                     : "border-gray-500"
                 }`}
                 onClick={() => setRole(option)}
@@ -223,13 +329,16 @@ export default function Signup() {
                   "text-sm",
                   "font-medium"
                 )}
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
         {/* SIGNUP Button */}
-        <div className="flex gap-2 mt-6 cursor-pointer hover:scale-105 transition-transform">
+        <div
+          onClick={handleSubmit}
+          className="flex gap-2 mt-6 cursor-pointer hover:scale-105 transition-transform"
+        >
           {renderText(
             "SIGN UP",
             "signup-button",
