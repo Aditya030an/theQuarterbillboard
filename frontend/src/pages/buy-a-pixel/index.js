@@ -251,6 +251,8 @@ const handleMouseOver = (index) => {
 
     const form = new FormData();
     form.append("adOwner", "user123"); // Replace with actual user ID
+    form.append("name", "Aditya")
+    form.append("email", "aditya@gmail.com")
     form.append("startingPixel", pixels[0]);
     form.append("rows", rows);
     form.append("cols", cols);
@@ -270,10 +272,17 @@ const handleMouseOver = (index) => {
     }
 
     const result = await response.json();
-    if (result.success) {
+    if (response.status == 201) {
       setIsLoading(false);
       alert("Ad Block created successfully!");
       console.log("Ad Block Data:", result.adBlock);
+    if (result.url) {
+      window.location.href = result.url;
+    } else {
+      alert('Failed to initiate payment');
+    }
+
+    setIsLoading(false);
       fetchAllSoldPixels(); // Refresh sold pixels after purchase
       setSelectedPixels(new Set()); // Clear selection after purchase
     } 

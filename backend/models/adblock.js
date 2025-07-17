@@ -10,7 +10,10 @@ const adBlockSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   imageURL: { type: String, required: true },                    
   pixels: [{ type: Number, required: true }],
-  timestamp: { type: Date, default: Date.now }
+  timestamp: { type: Date, default: Date.now },
+  paymentId: { type: String },
+  status: { type: Boolean, required: true },
+  transactionId: { type: String },
 });
 
 const AdBlock = mongoose.model('AdBlock', adBlockSchema);
